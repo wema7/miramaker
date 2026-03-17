@@ -1,621 +1,176 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>O Enigma Final</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <title>Guia de Farm - Terra Maldita</title>
     <style>
+        :root {
+            --bg-color: #0d0e15;
+            --card-bg: #1a1c29;
+            --text-main: #e2e8f0;
+            --accent-gold: #ffd700;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #111827; /* Fundo escuro */
-            color: #F3F4F6;
-            overflow: hidden; /* Evita barras de rolagem durante transições */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
         }
-        .font-serif {
-            font-family: 'Playfair Display', serif;
+
+        header {
+            background: linear-gradient(135deg, #4c0519 0%, #1a1c29 100%);
+            padding: 3rem 1rem;
+            text-align: center;
+            border-bottom: 3px solid var(--accent-red);
         }
-        .step-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: row; /* Alterado para linha */
-            justify-content: space-between; /* Para galerias laterais */
-            align-items: center;
+
+        h1 {
+            color: #fff;
+            font-size: 2.5rem;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .subtitle {
+            color: var(--accent-gold);
+            font-size: 1.2rem;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .alert-box {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid var(--accent-red);
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            border: 1px solid #2d3748;
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-gold);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: var(--accent-gold);
+            border-bottom: 1px solid #2d3748;
+            padding-bottom: 0.5rem;
+        }
+
+        .highlight {
+            color: var(--accent-green);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .conclusion {
+            background: linear-gradient(to right, #1a1c29, #064e3b);
             padding: 2rem;
-            transition: opacity 0.8s ease-in-out;
-            opacity: 0;
-            visibility: hidden;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid var(--accent-green);
         }
-        .step-screen.visible {
-            opacity: 1;
-            visibility: visible;
+
+        .conclusion h2 {
+            color: var(--accent-gold);
+            margin-top: 0;
         }
-        .hidden {
-            display: none;
+
+        .big-number {
+            display: block;
+            font-size: 2rem;
+            color: var(--accent-green);
+            font-weight: bold;
+            margin: 1rem 0;
+            text-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
         }
         
-        /* Fundos */
-        #intro-screen {
-            background-color: #111827;
-            justify-content: center;
-        }
-        #step-1-bg {
-            background-color: #374151;
-            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
-        }
-        #step-2-bg {
-            background-color: #064E3B;
-            background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7));
-        }
-        #step-3-bg {
-            background-color: #1E3A8A; /* Azul do oceano */
-            background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7));
-        }
-        #step-4-bg {
-            /* Tema Matrix */
-            background-color: #000000;
-            background-image: linear-gradient(315deg, rgba(0, 26, 0, 0.7) 0%, #0a0a0a 74%);
-            justify-content: center; /* Centraliza etapas sem galeria */
-        }
-        #success-screen {
-            background-color: #111827;
-            justify-content: center; /* Centraliza tela final */
+        ul {
+            padding-left: 20px;
         }
 
-        /* Galerias Laterais */
-        .gallery-side {
-            flex: 1;
-            height: 100vh;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Peças de Arte (Etapa 1) */
-        .art-piece {
-            position: absolute;
-            opacity: 0;
-            transition: opacity 1.5s ease-in-out;
-            background-size: cover;
-            background-position: center;
-            border: 4px solid #D1B383; /* Borda dourada */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
-            border-radius: 4px;
-        }
-
-        /* Peças de Fauna (Etapa 2) */
-        .fauna-piece {
-            position: absolute;
-            opacity: 0;
-            transition: opacity 2.5s ease-in-out;
-            background-size: cover;
-            background-position: center;
-            border-radius: 50%; /* Circulares */
-            border: 2px solid rgba(110, 231, 183, 0.7);
-        }
-
-        /* Peças do Oceano (Etapa 3) */
-        .ocean-piece {
-            position: absolute;
-            opacity: 0;
-            transition: opacity 2.5s ease-in-out;
-            background-size: cover;
-            background-position: center;
-            border-radius: 4px;
-            border: 2px solid rgba(147, 197, 253, 0.5); /* Borda azul clara */
-            filter: sepia(0.3); /* Efeito de mapa antigo */
-        }
-
-        /* Estilo comum dos elementos */
-        .content-box {
-            position: relative;
-            z-index: 10;
-            background-color: rgba(17, 24, 39, 0.85); /* Fundo da caixa de conteúdo */
-            border-radius: 0.75rem;
-            padding: 2.5rem;
-            width: 100%;
-            max-width: 600px; /* Largura fixa para o conteúdo */
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            flex-shrink: 0; /* Impede que a caixa encolha */
-        }
-        input[type="number"] {
-            -moz-appearance: textfield;
-            background-color: #374151;
-            color: #F3F4F6;
-        }
-        input[type="number"]::-webkit-outer-spin-button,
-        input[type="number"]::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        .btn {
-            transition: all 0.3s ease;
-            border-radius: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            font-weight: 600;
-        }
-        .btn-primary {
-            background-color: #D1B383; /* Dourado */
-            color: #111827;
-        }
-        .btn-primary:hover {
-            background-color: #E5C9A3;
-        }
-        .btn-secondary {
-            background-color: transparent;
-            color: #D1B383;
-            border: 2px solid #D1B383;
-        }
-        .btn-secondary:hover {
-            background-color: rgba(209, 179, 131, 0.1);
-        }
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .message {
-            min-height: 24px; /* Evita que o layout pule */
-            transition: all 0.3s ease;
+        li {
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Tela de Introdução -->
-    <section id="intro-screen" class="step-screen visible">
-        <div class="content-box text-center">
-            <h1 class="font-serif text-4xl font-bold text-center mb-4 text-[#D1B383]">O Enigma Final</h1>
-            <p class="text-center text-gray-300 mb-8 text-lg">
-                Parabéns, viajante. Você superou os desafios do mundo real. Suas mãos decifraram os enigmas físicos, e seus passos o trouxeram até aqui.
-                <br><br>
-                Mas a jornada ainda não terminou. O último obstáculo é digital. Quatro mundos o aguardam do outro lado desta tela, guardando os quatro números finais.
-                <br><br>
-                Você ousa completar o que começou?
-            </p>
-            <button id="start-button" class="btn btn-primary w-full text-lg">Começar o Desafio Final</button>
-        </div>
-    </section>
+    <header>
+        <h1>Guia de Farm: Terra Maldita</h1>
+        <div class="subtitle">Como otimizar seu tempo e fazer até 12KK por hora!</div>
+    </header>
 
-    <!-- Etapa 1: Obras de Arte -->
-    <section id="step-1-bg" class="step-screen">
-        <div id="art-gallery-left" class="gallery-side"></div>
-        <div class="content-box">
-            <h2 class="font-serif text-3xl font-bold text-center mb-2 text-[#D1B383]">A Galeria dos Enigmas</h2>
-            <p id="q1-text" class="text-center text-gray-300 mb-6 text-lg"></p>
-            <div class="flex space-x-4 mb-4">
-                <input type="number" id="q1-input" class="w-full text-center text-2xl p-3 rounded-lg border-2 border-gray-600 focus:border-[#D1B383] focus:ring-0 outline-none" placeholder="#">
-                <button id="q1-check" class="btn btn-primary">Verificar</button>
+    <div class="container">
+        
+        <div class="alert-box">
+            <strong>Nota de Atualização:</strong> Era melhor antes, mas o mapa sofreu um leve nerf recentemente. Mesmo assim, continua sendo um dos locais mais lucrativos se você souber a estratégia certa.
+        </div>
+
+        <p>A mecânica da Terra Maldita é simples, mas extremamente eficiente: <strong>o mapa dropa MUITOS itens</strong>. O segredo do lucro absurdo não está em itens raros, mas no volume. Se você for lá e ficar vendendo tudo o que cai no <code>/shop</code>, o gold se multiplica rapidamente.</p>
+
+        <h2 style="color: var(--accent-gold); margin-top: 2rem;">Estratégias de Otimização</h2>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>💻 O Setup Perfeito (2 PCs)</h3>
+                <p>Para extrair o potencial máximo do mapa, você precisa separar as funções:</p>
+                <ul>
+                    <li><strong>PC 1:</strong> Deixe uma Sacer focada apenas em matar os mobs.</li>
+                    <li><strong>PC 2:</strong> Foca exclusivamente em recolher os drops e vender no <code>/shop</code>.</li>
+                </ul>
+                <p><strong>Rendimento Máximo:</strong> <span class="highlight">Até 2,5KK em 10 minutos.</span></p>
             </div>
-            <button id="q1-hint" class="btn btn-secondary w-full mb-4">Pedir Dica ✨</button>
-            <p id="q1-message" class="message text-center text-lg"></p>
-        </div>
-        <div id="art-gallery-right" class="gallery-side"></div>
-    </section>
 
-    <!-- Etapa 2: Fauna Brasileira -->
-    <section id="step-2-bg" class="step-screen">
-        <div id="fauna-gallery-left" class="gallery-side"></div>
-        <div class="content-box">
-            <h2 class="font-serif text-3xl font-bold text-center mb-2 text-[#6EE7B7]">O Coração Verde</h2>
-            <p id="q2-text" class="text-center text-gray-300 mb-6 text-lg"></p>
-            <div class="flex space-x-4 mb-4">
-                <input type="number" id="q2-input" class="w-full text-center text-2xl p-3 rounded-lg border-2 border-gray-600 focus:border-[#6EE7B7] focus:ring-0 outline-none" placeholder="#">
-                <button id="q2-check" class="btn btn-primary" style="background-color: #34d399; color: #064e3b;">Verificar</button>
+            <div class="card">
+                <h3>🖥️ O Setup Solo (1 PC)</h3>
+                <p>É possível farmar com apenas uma máquina? Claro que sim! Porém, a otimização cai naturalmente, pois o mesmo personagem que mata, precisa parar para recolher e vender.</p>
+                <br>
+                <p><strong>Rendimento Médio:</strong> <span class="highlight">~ 1,2KK em 10 minutos.</span></p>
             </div>
-            <button id="q2-hint" class="btn btn-secondary w-full mb-4" style="border-color: #34d399; color: #34d399;">Pedir Dica ✨</button>
-            <p id="q2-message" class="message text-center text-lg"></p>
         </div>
-        <div id="fauna-gallery-right" class="gallery-side"></div>
-    </section>
 
-    <!-- Etapa 3: Expedição -->
-    <section id="step-3-bg" class="step-screen">
-        <div id="ocean-gallery-left" class="gallery-side"></div>
-        <div class="content-box">
-            <h2 class="font-serif text-3xl font-bold text-center mb-2 text-[#93C5FD]">A Travessia</h2>
-            <p id="q3-text" class="text-center text-gray-300 mb-6 text-lg"></p>
-            <div class="flex space-x-4 mb-4">
-                <input type="number" id="q3-input" class="w-full text-center text-2xl p-3 rounded-lg border-2 border-gray-600 focus:border-[#93C5FD] focus:ring-0 outline-none" placeholder="#">
-                <button id="q3-check" class="btn btn-primary" style="background-color: #60a5fa; color: #1e3a8a;">Verificar</button>
-            </div>
-            <button id="q3-hint" class="btn btn-secondary w-full mb-4" style="border-color: #60a5fa; color: #60a5fa;">Pedir Dica ✨</button>
-            <p id="q3-message" class="message text-center text-lg"></p>
+        <div class="conclusion">
+            <h2>A Realidade do Farm: O que esperar?</h2>
+            <p>Sendo realista e mantendo uma boa cadência, com o mapa otimizado você consegue fazer uma média segura de <strong>1,8KK a 2KK a cada 10 minutos</strong>.</p>
+            
+            <span class="big-number">10,8KK a 12KK por Hora!</span>
+            
+            <p><em>E o melhor:</em> Esse valor é <strong>FORA O GOLD PASSIVO</strong> gerado pelo mascote/coletor!</p>
         </div>
-        <div id="ocean-gallery-right" class="gallery-side"></div>
-    </section>
 
-    <!-- Etapa 4: Lógica (Tema Matrix) -->
-    <section id="step-4-bg" class="step-screen">
-        <div class="content-box" style="border-color: rgba(34, 197, 94, 0.3);">
-            <h2 class="font-serif text-3xl font-bold text-center mb-2 text-green-400">O Código-Fonte</h2>
-            <p id="q4-text" class="text-center text-gray-300 mb-6 text-lg"></p>
-            <div class="flex space-x-4 mb-4">
-                <input type="number" id="q4-input" class="w-full text-center text-2xl p-3 rounded-lg border-2 border-gray-600 focus:border-green-400 focus:ring-0 outline-none" placeholder="#">
-                <button id="q4-check" class="btn" style="background-color: #22c55e; color: #000;">Verificar</button>
-            </div>
-            <button id="q4-hint" class="btn w-full mb-4" style="border: 2px solid #22c55e; color: #22c55e; background-color: transparent;">Pedir Dica ✨</button>
-            <p id="q4-message" class="message text-center text-lg"></p>
-        </div>
-    </section>
-    
-    <!-- Tela de Sucesso -->
-    <section id="success-screen" class="step-screen">
-        <div class="content-box text-center">
-            <h2 class="font-serif text-4xl font-bold mb-4 text-[#D1B383]">Desafio Concluído!</h2>
-            <p class="text-2xl text-gray-300 mb-6">Parabéns por completar o desafio.</p>
-            
-            <p class="text-lg text-gray-100 font-semibold mb-4">Poucos chegam tão longe. Você provou seu valor no mundo real e navegou pela galeria, pela selva, pelo oceano e pelo código-fonte.</p>
-            <p class="text-lg text-gray-100 font-semibold mb-8">A sua recompensa, guardada por tanto tempo, finalmente pode ser sua.</p>
-            
-            <!-- Caixa de código e outras instruções removidas conforme solicitado -->
-        </div>
-    </section>
+    </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const challenges = [
-                {
-                    // Etapa 1
-                    question: "Você vaga por uma galeria silenciosa. Obras famosas o observam das paredes, mas uma em particular atrai sua atenção. Seu olhar enigmático parece seguir cada movimento seu, um mistério que séculos não decifraram. Ela reside no Louvre, um ícone eterno.<br><br>Para decifrar a primeira senha, some a quantidade de letras em seu nome mais famoso.",
-                    answer: "8", // Mona Lisa
-                    hintPrompt: "Gere uma dica poética sobre a pintura mais famosa do Louvre, focando em seu sorriso e olhar, sem mencionar seu nome ou o artista."
-                },
-                {
-                    // Etapa 2
-                    question: "As molduras douradas desaparecem. O ar torna-se denso e pesado de umidade. O silêncio do museu dá lugar aos sons de uma vida selvagem escondida sob um dossel de árvores gigantescas.<br><br>Você está no pulmão do mundo. Aqui, rios colossais de água escura cortam a terra, mas acima deles correm os 'rios voadores' — nuvens massivas de vapor que sobem da floresta. É a terra da Iara e do Boto, o vasto território ao norte do mapa.<br><br>Quantos estados, unidos por esta selva pulsante, compõem esta região?",
-                    answer: "7", // Região Norte
-                    hintPrompt: "Gere uma dica sobre a região brasileira que abriga a maior parte da Floresta Amazônica, focando na sua imensidão e nos rios, sem dizer o nome ou o número de estados."
-                },
-                {
-                    // Etapa 3
-                    question: "O verde da floresta desaparece no horizonte. Agora, há apenas o azul infinito do oceano e o rangido da madeira. Você está na expedição de Pedro Álvares Cabral, partindo de Lisboa no dia 9 de Março. O tempo se arrasta no mar, até que em 22 de Abril, um grito de 'Terra à vista!' muda a história.<br><br>Você viveu a ansiedade da expedição e a incerteza da chegada. Se souber em que ano chegaram ao novo mundo, a soma dos algarismos se fará senha desta etapa.",
-                    answer: "6", // 1500 -> 1+5+0+0
-                    hintPrompt: "Gere uma dica sobre o ano da chegada de Cabral ao Brasil. Foque no 'início do século 16', sem mencionar '1500' ou '6'."
-                },
-                {
-                    // Etapa 4
-                    question: "O oceano se dissolve em um fluxo de código verde. Você não está mais em um navio, mas sim dentro do sistema. O mundo que você conhecia era uma ilusão. Resta apenas a lógica.<br><br>Na primeira porta, a arte lhe deu o código 8.<br>Na segunda, a selva lhe deu o código 7.<br>Na terceira, a história lhe deu o código 6.<br><br>Agora, diante da porta final, o enigma é o padrão. Qual é o próximo dígito que quebra a simulação?",
-                    answer: "5",
-                    hintPrompt: "Gere uma dica sobre uma contagem regressiva simples que começa em 8, usando termos como 'código' ou 'sistema'."
-                }
-            ];
-
-            let currentStep = 0;
-            const finalCode = [];
-            let galleryIntervals = []; // Armazena os intervalos para limpá-los
-
-            const introScreen = document.getElementById('intro-screen');
-            const stepScreens = document.querySelectorAll('.step-screen:not(#intro-screen):not(#success-screen)'); // Apenas as 4 etapas
-            const successScreen = document.getElementById('success-screen');
-            
-            // Ocultamos a referência ao final-code já que ele foi removido do HTML
-            // const finalCodeEl = document.getElementById('final-code'); 
-            const apiKey = ""; // Deixe em branco, será gerenciado pelo ambiente
-
-            function showStep(index) {
-                if (index >= challenges.length) {
-                    showSuccess();
-                    return;
-                }
-
-                // Centraliza o conteúdo de texto dinamicamente
-                const challenge = challenges[index];
-                const textEl = document.getElementById(`q${index + 1}-text`);
-                if (textEl) {
-                    textEl.innerHTML = challenge.question;
-                }
-
-                // Esconde todas as telas (intro, etapas, sucesso)
-                document.querySelectorAll('.step-screen').forEach(screen => {
-                    screen.classList.remove('visible');
-                    screen.style.visibility = 'hidden';
-                });
-
-                // Mostra a tela da etapa correta
-                const currentScreen = stepScreens[index];
-                currentScreen.classList.remove('hidden');
-                currentScreen.style.visibility = 'visible';
-                setTimeout(() => {
-                    currentScreen.classList.add('visible');
-                }, 50);
-                
-                // Limpa todas as galerias e inicia a correta
-                stopGalleries();
-
-                if (index === 0) {
-                    startGallery();
-                } else if (index === 1) {
-                    startFaunaGallery();
-                } else if (index === 2) {
-                    startOceanGallery();
-                }
-            }
-
-            function checkAnswer(stepIndex) {
-                const input = document.getElementById(`q${stepIndex + 1}-input`);
-                const messageEl = document.getElementById(`q${stepIndex + 1}-message`);
-                const userAnswer = input.value;
-                const correctAnswer = challenges[stepIndex].answer;
-
-                if (userAnswer === correctAnswer) {
-                    messageEl.textContent = 'Correto! Preparando próximo desafio...';
-                    messageEl.style.color = '#6EE7B7'; // Verde sucesso
-                    finalCode.push(userAnswer);
-                    
-                    document.getElementById(`q${stepIndex + 1}-check`).disabled = true;
-                    document.getElementById(`q${stepIndex + 1}-hint`).disabled = true;
-
-                    setTimeout(() => {
-                        currentStep++;
-                        if (currentStep < challenges.length) {
-                            showStep(currentStep);
-                        } else {
-                            showSuccess();
-                        }
-                    }, 1500);
-
-                } else {
-                    messageEl.textContent = 'Resposta incorreta. Tente novamente.';
-                    messageEl.style.color = '#FCA5A5'; // Vermelho erro
-                    input.value = '';
-                    
-                    const contentBox = stepScreens[stepIndex].querySelector('.content-box');
-                    contentBox.style.animation = 'shake 0.5s';
-                    setTimeout(() => {
-                        contentBox.style.animation = '';
-                    }, 500);
-                }
-            }
-
-            async function getHint(stepIndex) {
-                const hintButton = document.getElementById(`q${stepIndex + 1}-hint`);
-                const messageEl = document.getElementById(`q${stepIndex + 1}-message`);
-                const prompt = challenges[stepIndex].hintPrompt;
-
-                hintButton.disabled = true;
-                hintButton.textContent = 'Pensando...';
-                messageEl.textContent = 'Aguarde, o oráculo está consultando...';
-                messageEl.style.color = '#93C5FD'; // Azul informação
-
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-                const payload = {
-                    contents: [{ parts: [{ text: prompt }] }],
-                    systemInstruction: {
-                        parts: [{ text: "Você é um mestre de enigmas. Forneça uma dica poética e curta (máximo 2 frases) para o enigma." }]
-                    },
-                };
-
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('Falha ao buscar dica.');
-                    }
-
-                    const result = await response.json();
-                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-
-                    if (text) {
-                        messageEl.textContent = text;
-                        messageEl.style.color = '#D1B383'; // Dourado dica
-                    } else {
-                        throw new Error('Não foi possível gerar uma dica.');
-                    }
-
-                } catch (error) {
-                    console.error('Erro na API Gemini:', error);
-                    messageEl.textContent = 'Não foi possível obter a dica. Tente novamente.';
-                    messageEl.style.color = '#FCA5A5'; // Vermelho erro
-                } finally {
-                    hintButton.disabled = false;
-                    hintButton.textContent = 'Pedir Dica ✨';
-                }
-            }
-            
-            function showSuccess() {
-                // Como removemos a caixa de código, não precisamos mais preenchê-la
-                
-                document.querySelectorAll('.step-screen').forEach(screen => {
-                    screen.classList.remove('visible');
-                    screen.style.visibility = 'hidden';
-                });
-                
-                successScreen.classList.remove('hidden');
-                successScreen.style.visibility = 'visible';
-                setTimeout(() => {
-                    successScreen.classList.add('visible');
-                }, 50);
-            }
-
-            // --- LISTENERS DE EVENTOS ---
-
-            // Botão de Iniciar
-            document.getElementById('start-button').addEventListener('click', () => {
-                introScreen.classList.remove('visible');
-                introScreen.style.visibility = 'hidden';
-                setTimeout(() => introScreen.classList.add('hidden'), 800);
-                
-                showStep(0); // Inicia a Etapa 1
-            });
-            
-            // Botões das Etapas
-            document.getElementById('q1-check').addEventListener('click', () => checkAnswer(0));
-            document.getElementById('q1-hint').addEventListener('click', () => getHint(0));
-            
-            document.getElementById('q2-check').addEventListener('click', () => checkAnswer(1));
-            document.getElementById('q2-hint').addEventListener('click', () => getHint(1));
-            
-            document.getElementById('q3-check').addEventListener('click', () => checkAnswer(2));
-            document.getElementById('q3-hint').addEventListener('click', () => getHint(2));
-            
-            document.getElementById('q4-check').addEventListener('click', () => checkAnswer(3));
-            document.getElementById('q4-hint').addEventListener('click', () => getHint(3));
-
-            
-            // --- LÓGICA DAS GALERIAS (OTIMIZADA COM IMAGENS REAIS LEVES) ---
-
-            const artImageUrls = [
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/306px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg',
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/375px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg',
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Edvard_Munch%2C_1893%2C_The_Scream%2C_oil%2C_tempera_and_pastel_on_cardboard%2C_91_x_73_cm%2C_National_Gallery_of_Norway.jpg/317px-Edvard_Munch%2C_1893%2C_The_Scream%2C_oil%2C_tempera_and_pastel_on_cardboard%2C_91_x_73_cm%2C_National_Gallery_of_Norway.jpg',
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg/450px-Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg'
-            ];
-            
-            const faunaImageUrls = [
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Standing_jaguar.jpg/450px-Standing_jaguar.jpg', // Onça
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Amazon_river_dolphin_%28cropped%29.jpg/450px-Amazon_river_dolphin_%28cropped%29.jpg', // Boto
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Canaima_National_Park_2005_4.jpg/450px-Canaima_National_Park_2005_4.jpg', // Cachoeira
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Amazon_rainforest_in_Ecuador.jpg/450px-Amazon_rainforest_in_Ecuador.jpg', // Dossel denso
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Red-and-green_Macaw_%28Ara_chloropterus%29_-_side_view.jpg/450px-Red-and-green_Macaw_%28Ara_chloropterus%29_-_side_view.jpg', // Arara
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Victoria_Regia_Nymphaea_Amazonica.jpg/450px-Victoria_Regia_Nymphaea_Amazonica.jpg' // Vitória-Régia
-            ];
-
-            const oceanImageUrls = [
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Monument_to_the_Discoveries_-_Caravel.jpg/450px-Monument_to_the_Discoveries_-_Caravel.jpg', // Caravela com Cruz
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Carrack_Santa_Catarina_do_Monte_Sinai.jpg/450px-Carrack_Santa_Catarina_do_Monte_Sinai.jpg', // Nau com Cruz
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Cantino_planisphere_%281502%29.jpg/387px-Cantino_planisphere_%281502%29.jpg', // Mapa
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Desembarque_de_Pedro_%C3%81lvares_Cabral_em_Porto_Seguro_em_1500.jpg/450px-Desembarque_de_Pedro_%C3%81lvares_Cabral_em_Porto_Seguro_em_1500.jpg', // Desembarque
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Compass_rose_brown.svg/300px-Compass_rose_brown.svg.png', // Bússola
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Pedro_%C3%81lvares_Cabral.jpg/330px-Pedro_%C3%81lvares_Cabral.jpg' // Retrato de Cabral
-            ];
-
-
-            // Limpa todos os intervalos de animação
-            function stopGalleries() {
-                galleryIntervals.forEach(clearInterval);
-                galleryIntervals = [];
-                
-                const galleries = document.querySelectorAll('.gallery-side');
-                galleries.forEach(g => { g.innerHTML = ''; });
-            }
-
-            function startGallery() {
-                const galleryLeft = document.getElementById('art-gallery-left');
-                const galleryRight = document.getElementById('art-gallery-right');
-
-                artImageUrls.forEach((url, index) => {
-                    const piece = document.createElement('div');
-                    piece.className = 'art-piece';
-                    piece.style.backgroundImage = `url(${url})`;
-                    
-                    if (index % 2 === 0) {
-                        galleryLeft.appendChild(piece);
-                    } else {
-                        galleryRight.appendChild(piece);
-                    }
-                    animatePiece(piece, 1.5);
-                });
-            }
-            
-            function startFaunaGallery() {
-                const galleryLeft = document.getElementById('fauna-gallery-left');
-                const galleryRight = document.getElementById('fauna-gallery-right');
-
-                faunaImageUrls.forEach((url, index) => {
-                    const piece = document.createElement('div');
-                    piece.className = 'fauna-piece';
-                    piece.style.backgroundImage = `url(${url})`;
-                    
-                    if (index % 2 === 0) {
-                        galleryLeft.appendChild(piece);
-                    } else {
-                        galleryRight.appendChild(piece);
-                    }
-                    animatePiece(piece, 2.0);
-                });
-            }
-
-            function startOceanGallery() {
-                const galleryLeft = document.getElementById('ocean-gallery-left');
-                const galleryRight = document.getElementById('ocean-gallery-right');
-
-                oceanImageUrls.forEach((url, index) => {
-                    const piece = document.createElement('div');
-                    piece.className = 'ocean-piece';
-                    piece.style.backgroundImage = `url(${url})`;
-                    
-                    if (index % 2 === 0) {
-                        galleryLeft.appendChild(piece);
-                    } else {
-                        galleryRight.appendChild(piece);
-                    }
-                    animatePiece(piece, 2.0);
-                });
-            }
-
-            // Animação Otimizada (só fade in/out, sem movimento)
-            function animatePiece(piece, speedFactor = 1.0) {
-                const container = piece.parentElement;
-                if (!container) return;
-
-                const vw = container.clientWidth;
-                const vh = container.clientHeight;
-
-                // Define tamanho e posição inicial aleatórios
-                const w = Math.random() * 100 + 100; // Tamanho menor (100-200px)
-                const h = Math.random() * 100 + 100; // Tamanho menor (100-200px)
-                const x = Math.random() * (vw - w);
-                const y = Math.random() * (vh - h);
-                
-                piece.style.width = `${w}px`;
-                piece.style.height = `${h}px`;
-                piece.style.top = `${y}px`;
-                piece.style.left = `${x}px`;
-                
-                // Fade in inicial
-                setTimeout(() => {
-                    piece.style.opacity = '0.3';
-                }, Math.random() * 2000 * speedFactor);
-
-                // Intervalo para pulsar a opacidade (fade out / fade in)
-                const interval = setInterval(() => {
-                    piece.style.opacity = '0'; // Fade out
-                    
-                    setTimeout(() => {
-                        // Move para um novo local *antes* de reaparecer
-                        const newX = Math.random() * (vw - w);
-                        const newY = Math.random() * (vh - h);
-                        piece.style.top = `${newY}px`;
-                        piece.style.left = `${newX}px`;
-
-                        setTimeout(() => {
-                             piece.style.opacity = '0.3'; // Fade in
-                        }, 500); // tempo de espera no novo local
-                       
-                    }, 2000 * speedFactor); // Tempo para ficar "sumido"
-
-                }, (Math.random() * 4000 + 4000) * speedFactor); // Tempo total do ciclo
-                
-                galleryIntervals.push(interval); // Armazena o intervalo para limpar depois
-            }
-
-            // Define estilos CSS para a animação de "tremor"
-            const styleSheet = document.createElement("style");
-            styleSheet.type = "text/css";
-            styleSheet.innerText = `
-                @keyframes shake {
-                    0% { transform: translateX(0); }
-                    25% { transform: translateX(-10px); }
-                    50% { transform: translateX(10px); }
-                    75% { transform: translateX(-10px); }
-                    100% { transform: translateX(0); }
-                }
-            `;
-            document.head.appendChild(styleSheet);
-
-            // NÃO inicia na primeira etapa, espera o clique no botão de Iniciar.
-            // A tela de intro já está visível por padrão via CSS.
-        });
-    </script>
 </body>
 </html>
-
